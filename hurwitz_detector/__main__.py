@@ -19,7 +19,7 @@ def HurwitzCFEDetector(reg_cont_fraction: [int], periodic_checker_count: int) ->
     g_upper_bound = len(reg_cont_fraction)
     for g in range(1, g_upper_bound):
         for h in range(1, g+1): #h <= g
-            periodic_checker_seqs = build_periodic_checker_seqs(periodic_checker_count)
+            periodic_checker_seqs = build_periodic_checker_seqs(g, h, len(reg_cont_fraction), periodic_checker_count)
             period_seqs = list(map(lambda x: x(reg_cont_fraction, g, h), periodic_checker_seqs))
             print_period_seqs(g, h, period_seqs)
             sequences_match = all_equal(period_seqs)
@@ -47,7 +47,7 @@ def build_period_val(reg_cont_fraction: [int], g: int, h: int, u: int) -> Option
         return None
 
 
-def build_periodic_checker_seqs(periodic_checker_count: int) -> [HurwitzPeriodSeqGenerator]:
+def build_periodic_checker_seqs(g: int, h: int, cont_fac_length: int, periodic_checker_count: int) -> [HurwitzPeriodSeqGenerator]:
     """
     Constructs a number of periodic checker functions, based on the desired amount passed in.
     These will be used to check for a period within the continued fraction. Cannot use LESS than
@@ -55,7 +55,13 @@ def build_periodic_checker_seqs(periodic_checker_count: int) -> [HurwitzPeriodSe
     :param periodic_checker_count: Number of periodic checker functions to create
     :return:
     """
-    periodic_checker_count = max(2, periodic_checker_count)
+    # The periodic checker count must be at least 2, but, to prevent an index out of bounds,
+    # we must adjust the number, if too many are requested, vs. the length of the continued fraction
+    N = cont_fac_length
+    search_func_index_limit = max(2, ((-g+h+N+1)//h)-1)
+    if periodic_checker_count > search_func_index_limit:
+        print(f"Search Function count adjusted to prevent index out of bounds. Capped at {search_func_index_limit}")
+    periodic_checker_count = min(max(2, periodic_checker_count), search_func_index_limit)
     ret_val = list()
     for i in range(1, periodic_checker_count+1):
         ret_val.append(build_periodic_checker_seq(i))
