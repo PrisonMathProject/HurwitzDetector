@@ -25,7 +25,7 @@ def HurwitzCFEDetector(reg_cont_fraction: [int], periodic_checker_count: int) ->
             sequences_match = all_equal(period_seqs)
             if sequences_match:
                 # We know the period starts at h
-                pre_period = reg_cont_fraction[0:h-1]
+                pre_period = reg_cont_fraction[0:g-h]
                 period_funcs = [build_period_val(reg_cont_fraction, g, h, u) for u in range(1, h+1)]
                 potential_hcfe = hurwitz.HurwitzCFE(pre_period, period_funcs)
                 # Check the hcfe matches the values of the continued fraction
@@ -39,7 +39,7 @@ def build_period_val(reg_cont_fraction: [int], g: int, h: int, u: int) -> Option
     b = reg_cont_fraction[g+u-1]
     c = reg_cont_fraction[g+h+u-1]
     if a == b == c:
-        return sympy.Symbol(a)
+        return sympy.simplify(a)
     elif a < b < c:
         k = sympy.Symbol("k")
         return sympy.simplify((b-a)*k + 2*a - b)
@@ -69,4 +69,11 @@ def build_periodic_checker_seq(u: int) -> HurwitzPeriodSeqGenerator:
     :param u:
     :return:
     """
-    return lambda a, g, h: [a[g + (u - 1)*h + v] - a[g + (u-2)*h + v] for v in range(h)]
+    return lambda a, g, h: search_func(a, g, h, u)
+
+
+def search_func(a: [int], g: int, h: int, u: int) -> Optional[list[int]]:
+    if g + (u - 1)*h + h-1 < len(a):
+        return [a[g + (u - 1)*h + v] - a[g + (u-2)*h + v] for v in range(h)]
+    else:
+        return None
