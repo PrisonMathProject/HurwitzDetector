@@ -3,7 +3,7 @@ from typing import NewType, Callable, Optional
 import sympy
 
 from hurwitz_detector import hurwitz
-from hurwitz_detector.util import all_equal
+from hurwitz_detector.util import all_equal_not_none
 
 # Represents a sequence of functions that generates a sequence that is used to check for a period
 # (ag+(μ−1)h+ν − ag+(μ−2)h+ν)_v=0^{(h−1)}
@@ -22,7 +22,7 @@ def HurwitzCFEDetector(reg_cont_fraction: [int], periodic_checker_count: int) ->
             periodic_checker_seqs = build_periodic_checker_seqs(g, h, len(reg_cont_fraction), periodic_checker_count)
             period_seqs = list(map(lambda x: x(reg_cont_fraction, g, h), periodic_checker_seqs))
             print_period_seqs(g, h, period_seqs)
-            sequences_match = all_equal(period_seqs)
+            sequences_match = all_equal_not_none(period_seqs)
             if sequences_match:
                 # We know the period starts at h
                 pre_period = reg_cont_fraction[0:g-h]

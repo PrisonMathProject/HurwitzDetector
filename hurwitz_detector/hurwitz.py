@@ -10,7 +10,7 @@ class HurwitzCFE:
 
     def __str__(self):
         periodic_funcs = ', '.join(map(str, self.period))
-        return "[" + ', '.join(map(str,self.pre_period)) + ", \overline{" + periodic_funcs + "}" + sympy.Symbol("]_k=1^{(\infty)}").__str__()
+        return "[" + ', '.join(map(str,self.pre_period)) + ", \overline{" + periodic_funcs + "}" + sympy.Symbol("]_{k=1}{\infty}").__str__()
 
     def matches(self, reg_cont_fraction: list[int]) -> bool:
         simplified_cfe = self.simplify(len(reg_cont_fraction))
