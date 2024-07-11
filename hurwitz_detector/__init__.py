@@ -26,11 +26,13 @@ def HurwitzCFEDetector(reg_cont_fraction: [int], periodic_checker_count: int) ->
             if sequences_match:
                 # We know the period starts at h
                 pre_period = reg_cont_fraction[0:g-h]
-                period_funcs = [build_period_val(reg_cont_fraction, g, h, u) for u in range(1, h+1)]
-                potential_hcfe = hurwitz.HurwitzCFE(pre_period, period_funcs)
-                # Check the hcfe matches the values of the continued fraction
-                if potential_hcfe.matches(reg_cont_fraction):
-                    return potential_hcfe
+                period_funcs: list[Optional[hurwitz.HurwitzPeriodFunction]] = [build_period_val(reg_cont_fraction, g, h, u) for u in range(1, h+1)]
+                # If Any of the period functions are None, we need to move to the next h
+                if None not in period_funcs:
+                    potential_hcfe = hurwitz.HurwitzCFE(pre_period, period_funcs)
+                    # Check the hcfe matches the values of the continued fraction
+                    if potential_hcfe.matches(reg_cont_fraction):
+                        return potential_hcfe
     return None
 
 
@@ -44,6 +46,9 @@ def build_period_val(reg_cont_fraction: [int], g: int, h: int, u: int) -> Option
         k = sympy.Symbol("k")
         return sympy.simplify((b-a)*k + 2*a - b)
     else:
+        """
+        This is the "otherwise" case from 38b, we need to move to the next h
+        """
         return None
 
 
