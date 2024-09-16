@@ -27,11 +27,12 @@ define function detector(fraction, period_checker_func_count)
             
 define function sequence_values_builder(fraction_array, g, h, period_checker_func_count)
     define the upper_bound as the last index of the fraction_array
-    # The sequence_limit is defined to ensure we do not create a sequence that goes out of the bounds of the fraction_array 
+    # The sequence_limit is defined to ensure we do not create a sequence that goes out of the bounds of the fraction_array. 
+    # Please note the use of the floor-division symbol in the equation 
     define the sequence_limit as the bigger value of (2 and ((-g+h+N+1)//h)-1)
     define sequence_list as an empty list that will be built below
     For u = 1 <= smaller value of (period_checker_func_count, sequence_limit)
-        define sequence as S_u(g,h) := (a_g+(u-1)h-a_g+(u-2)h,...,a_g+uh-1-a_g+(u-1)/(h-1))
+        define sequence as S_u(g,h) := (a_{g+(u-1)h}-a_{g+(u-2)h},...,a_{g+uh-1}-a_{g+(u-1)(h-1)})
         add sequence to sequence_list
     define return_value as the list of evaluations of the sequence_lists using the fraction_array
     return return_value     
